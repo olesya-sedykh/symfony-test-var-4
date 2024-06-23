@@ -15,6 +15,8 @@ form.addEventListener('submit', function(event) {
         category: formData.get('category')
     };
 
+    console.log(JSON.stringify(eventData));
+
     fetch('/test', {
         method: 'POST',
         body: JSON.stringify(eventData),

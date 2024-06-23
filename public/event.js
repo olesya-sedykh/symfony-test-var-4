@@ -9,6 +9,28 @@ fetch('/test', {
   )
 
 
+// function formatDateTime(dateTimeString) {
+//     const date = new Date(dateTimeString);
+//     const options = { day: 'numeric', month: 'long', year: 'numeric' };
+//     const formattedDate = date.toLocaleDateString('ru-RU', options);
+
+//     if (isToday(date)) {
+//         const timeOptions = { hour: 'numeric', minute: 'numeric' };
+//         const formattedTime = date.toLocaleTimeString('ru-RU', timeOptions);
+//         return `Сегодня в ${formattedTime}`;
+//     } 
+//     else {
+//         return formattedDate;
+//     }
+// }
+  
+// function isToday(someDate) {
+//     const today = new Date();
+//     return someDate.getDate() === today.getDate() &&
+//             someDate.getMonth() === today.getMonth() &&
+//             someDate.getFullYear() === today.getFullYear();
+// }
+
 function formatDateTime(dateTimeString) {
     const date = new Date(dateTimeString);
     const options = { day: 'numeric', month: 'long', year: 'numeric' };
@@ -23,7 +45,7 @@ function formatDateTime(dateTimeString) {
         return formattedDate;
     }
 }
-  
+
 function isToday(someDate) {
     const today = new Date();
     return someDate.getDate() === today.getDate() &&
@@ -52,7 +74,9 @@ function show_cards(data) {
         event_header.append(event_category);
 
         var event_date = document.createElement('div');
-        event_date.textContent = formatDateTime(data[i]['date']);
+        const momentDate = new Date(data[i]['date']['date']);
+        console.log(data[i]['date']['date']);
+        event_date.textContent = formatDateTime(momentDate);
         event_date.className = 'event_date';
         event_header.append(event_date);
 

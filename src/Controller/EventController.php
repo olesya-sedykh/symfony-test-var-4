@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use DateTimeImmutable;
 
 class EventController extends AbstractController
 {
@@ -98,22 +99,28 @@ class EventController extends AbstractController
     #[Route('/test', name: 'add_event', methods: ["POST"])]
     public function addEvent(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer) {
         try {
-            $requestData = $request->request->all();
+            // $requestData = $request->request->all();
             // $jsonData = $request->getContent();
             // $requestData = $serializer->deserialize($jsonData, 'App\Entity\Event', 'json');
+            $requestData = json_encode($request->getContent());
+            $requestData = json_decode($request->getContent(), true);
 
-            dump($request->getContent());
+            // dump(json_encode($request->getContent()));
+            dump($requestData);
     
             if (!$requestData || !isset($requestData['name'])) {
                 throw new \Exception('Invalid data');
             }
 
             $category = $entityManager->getRepository(Category::class)->findOneBy(['name' => $requestData['category']]);
+            dump($category);
             $category_id = null;
-            if (!$category) {
+            if ($category == null) {
+                dump($requestData['category']);
                 // Если категория не существует, создаем новую запись
                 $newCategory = new Category();
                 $newCategory->setName($requestData['category']);
+                dump($newCategory);
                 $entityManager->persist($newCategory);
                 $entityManager->flush();
                 $category = $newCategory;
@@ -129,8 +136,11 @@ class EventController extends AbstractController
             $event->setName($requestData['name']);
             $event->setContent($requestData['content']);
             $event->setImage($requestData['image']);
-            $event->setDate($requestData['date']);
+            dump(gettype($requestData['date']));
+            // $event->setDate($requestData['date']);
+            $event->setDate(new DateTimeImmutable($requestData['date']));
             // $test = 2;
+            // dump($event->getDate());
             $event->setCategory($category);
     
             $entityManager->persist($event);
@@ -177,6 +187,12 @@ class EventController extends AbstractController
     public function updateEvent(Request $request, EntityManagerInterface $entityManager, EventRepository $eventRepository, $id){
         try{
             $event = $eventRepository->find($id);
+
+            $requestData = json_encode($request->getContent());
+            $requestData = json_decode($request->getContent(), true);
+
+            dump($event);
+            dump($requestData['category']);
             if (!$event){
                 $data = [
                     'status' => 404,
@@ -184,18 +200,18 @@ class EventController extends AbstractController
                 ];
                 return $this->json($data, 404);
             }
-            if (!$request || !$request->get('name')) {
-                throw new \Exception();
-            }
+            // if (!$request || !$request->get('name')) {
+            //     throw new \Exception();
+            // }
 
             // находим нужный id категории по ее названию
-            $category_id = $entityManager->getRepository(Category::class)->findOneBy(['name' => $request->get('category')]);
+            $category = $entityManager->getRepository(Category::class)->findOneBy(['name' => $requestData['category']]);
         
-            $event->setName($request->get('name'));
-            $event->setContent($request->get('content'));
-            $event->setImage($request->get('image'));
-            $event->setDate($request->get('date'));
-            $event->setCategory($category_id);
+            $event->setName($requestData['name']);
+            $event->setContent($requestData['content']);
+            $event->setImage($requestData['image']);
+            $event->setDate(new DateTimeImmutable($requestData['date']));
+            $event->setCategory($category);
             $entityManager->flush();
         
             $data = [
