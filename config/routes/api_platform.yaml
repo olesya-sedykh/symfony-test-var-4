@@ -1,0 +1,34 @@
+events_list:
+    path: '/test'
+    controller: App\Controller\EventController::getEvents
+    methods: ['GET']
+
+event_views_list:
+    path: '/api/event_views'
+    controller: App\Controller\EventViewController::getEventViews
+    methods: ['GET']
+
+event_detail:
+    path: /api/events/{id}
+    controller: App\Controller\EventController::getEventDetail
+    methods: [GET]
+
+add_event:
+    path: '/test'
+    controller: App\Controller\EventController::addEvent
+    methods: ['POST']
+
+delete_event:
+    path: /test/{id}
+    controller: App\Controller\EventController::deleteEvent
+    methods: ['DELETE']
+
+update_event:
+    path: /test/{id}
+    controller: App\Controller\EventController::updateEvent
+    methods: ['PUT']
+
+api_platform:
+    resource: .
+    type: api_platform
+    prefix: /api

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ asset('style.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="main_wrap">
+    <div class="left">
+        <div class="left_up">
+            <div class="var_wrap">
+                <div class="variant">
+                    <img class = "logotip_image" src="img\logo.png" alt="logo">
+                    <div class="variant_text">Вариант</div>
+                </div>
+                <input class="search">
+            </div>
+            <div class="filter_wrap">
+                <div class="filter">
+                    <button class="all">Все новости</button>
+                    {# <div class="other"> #}
+                    <button class="sport">Спорт</button>
+                    <button class="society">Общество</button>
+                    <button class="economic">Экономика</button>
+                    {# </div> #}
+                </div>
+            </div>
+        </div>
+        <div class="left_down">
+            <div class="left_down_text">
+                © Вариант. <br>
+                Островский Константин, <br>
+                группа ИСПРВ-17-1
+            </div>
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="header">
+            <div class="text_header">Все контакты</div>
+            <button class="sort_header">По умолчанию</button>
+        </div>
+        <div class="wrap_content">
+            <div class="content"></div>
+        </div>
+        <div class="wrap_add">
+            <a href="/add_event" class="add_event">Добавить новость</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ asset('event.js') }}"></script>
+{% endblock %}
+
+{% for message in app.flashes('success') %}
+    <div class="alert alert-success">
+        {{ message }}
+    </div>
+{% endfor %}

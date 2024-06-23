@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ asset('form.css') }}">
+{% endblock %}
+
+<form id="event_form">
+    <h2>Добавить новость:</h2>
+    <div class="form_input">
+        <label for="name">Заголовок новости</label>
+        <input type="text" id="name" name="name" value="{{ event.name }}">
+    </div>
+    <div class="form_input">
+        <label for="content">Текст новости</label>
+        <textarea id="content" name="content">{{ event.content }}</textarea>
+    </div>
+    <div class="form_input">
+        <label for="image">Выберите изображение</label>
+        <input type="file" id="image" name="image" value="{{ event.image }}">
+    </div>
+    <div class="form_input">
+        <label for="category">Категория</label>
+        <input type="text" id="category" name="category" value="{{ event.category.name }}">
+    </div>
+    <button type="submit" id="button_submit">Отправить</button>
+</form>
+
+{% block scripts %}
+<script src="{{ asset('edit_form.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,53 @@
+{# <div class="event_form">
+    <h2>Добавить новость:</h2>
+    {{ form_start(eventForm) }}
+    <div class="form_input">
+        {{ form_label(eventForm.name, "Заголовок новости") }}
+        {{ form_widget(eventForm.name) }}
+    </div>
+    <div class="form_input">
+        {{ form_label(eventForm.content, "Текст новости") }}
+        {{ form_widget(eventForm.content) }}
+    </div>
+    <div class="form_input">
+        {{ form_label(eventForm.image, "Выберите изображение") }}
+        {{ form_widget(eventForm.image) }}
+    </div>
+    <div class="form_input">
+        {{ form_label(eventForm.category, "Категория") }}
+        {{ form_widget(eventForm.category) }}
+    </div>
+    <button type="submit">Отправить</button>
+    {{ form_end(eventForm) }}
+</div> #}
+
+<!DOCTYPE html>
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ asset('form.css') }}">
+{% endblock %}
+
+<form id="event_form">
+    <h2>Добавить новость:</h2>
+    <div class="form_input">
+        <label for="name">Заголовок новости</label>
+        <input type="text" id="name" name="name">
+    </div>
+    <div class="form_input">
+        <label for="content">Текст новости</label>
+        <textarea id="content" name="content"></textarea>
+    </div>
+    <div class="form_input">
+        <label for="image">Выберите изображение</label>
+        <input type="file" id="image" name="image">
+    </div>
+    <div class="form_input">
+        <label for="category">Категория</label>
+        <input type="text" id="category" name="category">
+    </div>
+    <button type="submit" id="button_submit">Отправить</button>
+</form>
+
+{% block scripts %}
+<script src="{{ asset('add_form.js') }}"></script>
+{% endblock %}
