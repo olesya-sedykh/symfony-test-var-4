@@ -3,6 +3,11 @@ events_list:
     controller: App\Controller\EventController::getEvents
     methods: ['GET']
 
+categories_list:
+    path: '/categories'
+    controller: App\Controller\CategoryController::getCategories
+    methods: ['GET']
+
 event_views_list:
     path: '/api/event_views'
     controller: App\Controller\EventViewController::getEventViews

@@ -9,6 +9,17 @@ fetch('/test', {
   )
 
 
+  fetch('/categories', {
+    method: 'GET',
+  })
+    .then((response) => response.json())
+    .then((data) => {
+        console.log(data);
+        show_cards(data);
+    }
+  )
+
+
 // function formatDateTime(dateTimeString) {
 //     const date = new Date(dateTimeString);
 //     const options = { day: 'numeric', month: 'long', year: 'numeric' };

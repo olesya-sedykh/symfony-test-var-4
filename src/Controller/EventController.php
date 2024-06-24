@@ -96,69 +96,152 @@ class EventController extends AbstractController
         return new JsonResponse($data);
     }
 
+    // #[Route('/test', name: 'add_event', methods: ["POST"])]
+    // public function addEvent(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer) {
+    //     try {
+    //         // $requestData = $request->request->all();
+    //         // $jsonData = $request->getContent();
+    //         // $requestData = $serializer->deserialize($jsonData, 'App\Entity\Event', 'json');
+    //         $requestData = json_encode($request->getContent());
+    //         $requestData = json_decode($request->getContent(), true);
+
+    //         // dump(json_encode($request->getContent()));
+    //         dump($requestData);
+    
+    //         if (!$requestData || !isset($requestData['name']) || !isset($requestData['content']) || !isset($requestData['image']) || !isset($requestData['date']) || !isset($requestData['category'])) {
+    //             dump('empty');
+    //             throw new \Exception('Invalid data');
+    //         }
+
+    //         $existingEvent = $entityManager->getRepository(Event::class)->findOneBy(['name' => $requestData['name']]);
+    //         dump($existingEvent);
+    //         if ($existingEvent) {
+    //             $data = [
+    //                 'status' => 422,
+    //                 'errors' => "Событие с таким именем уже существует",
+    //             ];
+    //             return $this->json($data, 422);
+    //         }
+
+    //         $category = $entityManager->getRepository(Category::class)->findOneBy(['name' => $requestData['category']]);
+    //         dump($category);
+    //         $category_id = null;
+    //         if ($category == null) {
+    //             dump($requestData['category']);
+    //             // Если категория не существует, создаем новую запись
+    //             $newCategory = new Category();
+    //             $newCategory->setName($requestData['category']);
+    //             dump($newCategory);
+    //             $entityManager->persist($newCategory);
+    //             $entityManager->flush();
+    //             $category = $newCategory;
+    //             dump($category);
+    //             $category_id = $newCategory->getId();
+    //         } 
+    //         else {
+    //             // Если категория уже существует, используем ее ID
+    //             $category_id = $category->getId();
+    //         }
+    
+    //         $event = new Event();
+    //         $event->setName($requestData['name']);
+    //         $event->setContent($requestData['content']);
+    //         $event->setImage($requestData['image']);
+    //         dump(gettype($requestData['date']));
+    //         // $event->setDate($requestData['date']);
+    //         $event->setDate(new DateTimeImmutable($requestData['date']));
+    //         // $test = 2;
+    //         // dump($event->getDate());
+    //         $event->setCategory($category);
+    
+    //         $entityManager->persist($event);
+    //         $entityManager->flush();
+    
+    //         $data = [
+    //             'status' => 201,
+    //             'success' => "Событие успешно добавлено",
+    //         ];
+    //         return $this->json($data, 201);
+    //     } 
+    //     catch (\Exception $e) {
+    //         $data = [
+    //             'status' => 400,
+    //             'errors' => "Данные не валидны",
+    //         ];
+    //         return $this->json($data, 400);
+    //     }
+    // }
+
+
     #[Route('/test', name: 'add_event', methods: ["POST"])]
-    public function addEvent(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer) {
+    public function addEvent(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer)
+    {
         try {
-            // $requestData = $request->request->all();
-            // $jsonData = $request->getContent();
-            // $requestData = $serializer->deserialize($jsonData, 'App\Entity\Event', 'json');
-            $requestData = json_encode($request->getContent());
-            $requestData = json_decode($request->getContent(), true);
+            dump($request->request->all());
+            dump($request->files->get('image'));
+            dump($date = $request->request->get('date'));
+            $formData = $request->request->all();
+            $name = $request->get('name');
+            $content = $request->get('content');
+            $image = $request->files->get('image');
+            $category = $request->get('category');
+            $date = new DateTimeImmutable();
 
-            // dump(json_encode($request->getContent()));
-            dump($requestData);
-    
-            if (!$requestData || !isset($requestData['name'])) {
-                throw new \Exception('Invalid data');
+            $existingEvent = $entityManager->getRepository(Event::class)->findOneBy(['name' => $name]);
+            if ($existingEvent) {
+                $data = [
+                    'status' => 422,
+                    'errors' => "Событие с таким именем уже существует",
+                ];
+                return $this->json($data, 422);
             }
 
-            $category = $entityManager->getRepository(Category::class)->findOneBy(['name' => $requestData['category']]);
-            dump($category);
-            $category_id = null;
-            if ($category == null) {
-                dump($requestData['category']);
-                // Если категория не существует, создаем новую запись
-                $newCategory = new Category();
-                $newCategory->setName($requestData['category']);
-                dump($newCategory);
-                $entityManager->persist($newCategory);
-                $entityManager->flush();
-                $category = $newCategory;
-                dump($category);
-                $category_id = $newCategory->getId();
-            } 
-            else {
-                // Если категория уже существует, используем ее ID
-                $category_id = $category->getId();
-            }
-    
+            $category = $this->handleCategory($entityManager, $category);
+
             $event = new Event();
-            $event->setName($requestData['name']);
-            $event->setContent($requestData['content']);
-            $event->setImage($requestData['image']);
-            dump(gettype($requestData['date']));
-            // $event->setDate($requestData['date']);
-            $event->setDate(new DateTimeImmutable($requestData['date']));
-            // $test = 2;
-            // dump($event->getDate());
+            $event->setName($name);
+            $event->setContent($content);
+            $event->setImage($this->handleImage($image));
+            $event->setDate($date);
             $event->setCategory($category);
-    
+
             $entityManager->persist($event);
             $entityManager->flush();
-    
+
             $data = [
                 'status' => 201,
                 'success' => "Событие успешно добавлено",
             ];
-            return $this->json($data, 200, [], ['Content-Type' => 'application/ld+json']);
+            return $this->json($data, 201);
         } 
         catch (\Exception $e) {
             $data = [
-                'status' => 422,
+                'status' => 400,
                 'errors' => "Данные не валидны",
             ];
-            return $this->json($data, 422, [], ['Content-Type' => 'application/ld+json']);
+            return $this->json($data, 400);
         }
+    }
+
+    private function handleCategory(EntityManagerInterface $entityManager, $categoryName)
+    {
+        $category = $entityManager->getRepository(Category::class)->findOneBy(['name' => $categoryName]);
+        if (!$category) {
+            $newCategory = new Category();
+            $newCategory->setName($categoryName);
+            $entityManager->persist($newCategory);
+            $entityManager->flush();
+            return $newCategory;
+        }
+        return $category;
+    }
+
+    private function handleImage($image)
+    {
+        // Сохраняем изображение и возвращаем путь к нему
+        $imagePath = 'img/' . $image->getClientOriginalName();
+        $image->move('img/', $image->getClientOriginalName());
+        return $imagePath;
     }
 
     #[Route('/test/{id}', name: 'delete_event', methods: ["DELETE"])]
@@ -177,10 +260,10 @@ class EventController extends AbstractController
         $entityManager->remove($event);
         $entityManager->flush();
         $data = [
-            'status' => 200,
+            'status' => 204,
             'errors' => "Новость удалена успешно",
         ];
-        return $this->json($data);
+        return $this->json($data, 204);
     }
 
     #[Route('/test/{id}', name: 'update_event', methods: ["PUT"])]
@@ -215,10 +298,10 @@ class EventController extends AbstractController
             $entityManager->flush();
         
             $data = [
-                'status' => 200,
+                'status' => 204,
                 'errors' => "Новость успешно отредактирована",
             ];
-            return $this->json($data);
+            return $this->json($data, 204);
         
         }
         catch (\Exception $e){
